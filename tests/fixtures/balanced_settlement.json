@@ -1,0 +1,55 @@
+{
+  "scenario": "balanced-settlement",
+  "congestion": {
+    "base": 5,
+    "perQueuedPacket": 2,
+    "retryBoost": 15
+  },
+  "participants": [
+    { "id": "bank-a", "balance": 0 },
+    { "id": "bank-b", "balance": 0 },
+    { "id": "merchant-a", "balance": 0 },
+    { "id": "merchant-b", "balance": 0 },
+    { "id": "operator", "balance": 0 }
+  ],
+  "reserves": [
+    { "id": "cov-alpha", "owner": "bank-a", "lane": "rtgs", "available": 120000 },
+    { "id": "cov-beta", "owner": "bank-b", "lane": "card", "available": 90000 }
+  ],
+  "batches": [
+    {
+      "id": "batch-001",
+      "epoch": 1,
+      "packets": [
+        {
+          "id": "pkt-alpha-001",
+          "reserve": "cov-alpha",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 25000,
+          "fee": 125,
+          "priority": 20,
+          "congestionWeight": 2,
+          "maxAttempts": 2,
+          "retryDelay": 1,
+          "legs": 3,
+          "memo": "daily-card-net"
+        },
+        {
+          "id": "pkt-beta-001",
+          "reserve": "cov-beta",
+          "beneficiary": "merchant-b",
+          "feeAccount": "operator",
+          "amount": 18000,
+          "fee": 80,
+          "priority": 18,
+          "congestionWeight": 1,
+          "maxAttempts": 2,
+          "retryDelay": 1,
+          "legs": 2,
+          "memo": "merchant-sweep"
+        }
+      ]
+    }
+  ]
+}

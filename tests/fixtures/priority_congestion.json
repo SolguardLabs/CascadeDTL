@@ -1,0 +1,63 @@
+{
+  "scenario": "priority-congestion",
+  "congestion": {
+    "base": 8,
+    "perQueuedPacket": 4,
+    "retryBoost": 10
+  },
+  "participants": [
+    { "id": "bank-a", "balance": 0 },
+    { "id": "merchant-a", "balance": 0 },
+    { "id": "merchant-b", "balance": 0 },
+    { "id": "merchant-c", "balance": 0 },
+    { "id": "operator", "balance": 0 }
+  ],
+  "reserves": [{ "id": "cov-queue", "owner": "bank-a", "lane": "priority", "available": 160000 }],
+  "batches": [
+    {
+      "id": "batch-priority",
+      "epoch": 30,
+      "packets": [
+        {
+          "id": "pkt-low-001",
+          "reserve": "cov-queue",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 10000,
+          "fee": 25,
+          "priority": 10,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-heavy-001",
+          "reserve": "cov-queue",
+          "beneficiary": "merchant-b",
+          "feeAccount": "operator",
+          "amount": 14000,
+          "fee": 35,
+          "priority": 8,
+          "congestionWeight": 4,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-top-001",
+          "reserve": "cov-queue",
+          "beneficiary": "merchant-c",
+          "feeAccount": "operator",
+          "amount": 9000,
+          "fee": 30,
+          "priority": 28,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        }
+      ]
+    }
+  ]
+}

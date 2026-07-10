@@ -1,0 +1,66 @@
+{
+  "scenario": "retained-retry-window",
+  "congestion": {
+    "base": 4,
+    "perQueuedPacket": 3,
+    "retryBoost": 22
+  },
+  "participants": [
+    { "id": "bank-a", "balance": 0 },
+    { "id": "merchant-a", "balance": 0 },
+    { "id": "merchant-b", "balance": 0 },
+    { "id": "operator", "balance": 0 }
+  ],
+  "reserves": [{ "id": "cov-main", "owner": "bank-a", "lane": "deferred", "available": 100000 }],
+  "batches": [
+    {
+      "id": "batch-open",
+      "epoch": 10,
+      "packets": [
+        {
+          "id": "pkt-retained-001",
+          "reserve": "cov-main",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 30000,
+          "fee": 150,
+          "priority": 17,
+          "congestionWeight": 2,
+          "maxAttempts": 3,
+          "retryDelay": 2,
+          "legs": 4,
+          "failure": {
+            "attempt": 1,
+            "leg": 2,
+            "terminal": false,
+            "releaseReserve": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "batch-gap",
+      "epoch": 11,
+      "packets": [
+        {
+          "id": "pkt-gap-001",
+          "reserve": "cov-main",
+          "beneficiary": "merchant-b",
+          "feeAccount": "operator",
+          "amount": 12000,
+          "fee": 60,
+          "priority": 19,
+          "congestionWeight": 1,
+          "maxAttempts": 2,
+          "retryDelay": 1,
+          "legs": 2
+        }
+      ]
+    },
+    {
+      "id": "batch-close",
+      "epoch": 12,
+      "packets": []
+    }
+  ]
+}

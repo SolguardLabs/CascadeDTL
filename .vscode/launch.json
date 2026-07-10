@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run balanced fixture",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/out/cascadedtl",
+      "args": ["run", "tests/fixtures/balanced_settlement.json", "--json", "--events"],
+      "cwd": "${workspaceFolder}",
+      "MIMode": "gdb"
+    }
+  ]
+}

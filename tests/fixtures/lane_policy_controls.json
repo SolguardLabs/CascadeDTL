@@ -1,0 +1,106 @@
+{
+  "scenario": "lane-policy-controls",
+  "congestion": {
+    "base": 6,
+    "perQueuedPacket": 2,
+    "retryBoost": 12
+  },
+  "participants": [
+    { "id": "bank-a", "balance": 0 },
+    { "id": "merchant-a", "balance": 0 },
+    { "id": "merchant-b", "balance": 0 },
+    { "id": "operator", "balance": 0 }
+  ],
+  "lanePolicies": [
+    {
+      "id": "rtgs",
+      "maxPacketAmount": 25000,
+      "maxFeeBps": 50,
+      "minPriority": 15,
+      "requireFeeAccount": true
+    },
+    {
+      "id": "batch",
+      "maxPacketAmount": 60000,
+      "maxFeeBps": 100,
+      "minPriority": 5
+    }
+  ],
+  "reserves": [
+    { "id": "cov-rtgs", "owner": "bank-a", "lane": "rtgs", "available": 100000 },
+    { "id": "cov-batch", "owner": "bank-a", "lane": "batch", "available": 50000 }
+  ],
+  "batches": [
+    {
+      "id": "policy-open",
+      "epoch": 40,
+      "packets": [
+        {
+          "id": "pkt-policy-ok",
+          "reserve": "cov-rtgs",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 20000,
+          "fee": 75,
+          "priority": 18,
+          "congestionWeight": 2,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-policy-fee",
+          "reserve": "cov-rtgs",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 10000,
+          "fee": 80,
+          "priority": 18,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-policy-amount",
+          "reserve": "cov-rtgs",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 30000,
+          "fee": 100,
+          "priority": 18,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-policy-priority",
+          "reserve": "cov-rtgs",
+          "beneficiary": "merchant-a",
+          "feeAccount": "operator",
+          "amount": 5000,
+          "fee": 10,
+          "priority": 10,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 1
+        },
+        {
+          "id": "pkt-policy-batch-ok",
+          "reserve": "cov-batch",
+          "beneficiary": "merchant-b",
+          "feeAccount": "operator",
+          "amount": 15000,
+          "fee": 120,
+          "priority": 8,
+          "congestionWeight": 1,
+          "maxAttempts": 1,
+          "retryDelay": 1,
+          "legs": 2
+        }
+      ]
+    }
+  ]
+}
