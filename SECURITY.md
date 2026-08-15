@@ -1,67 +1,106 @@
-﻿# Seguridad
+# Política de seguridad
 
-## Modelo
+CascadeDTL procesa decisiones económicas deterministas y trata la integridad del estado, la autorización operativa y la reproducibilidad como propiedades de primer nivel.
 
-CascadeDTL asume que los fixtures representan entradas ya autorizadas por un
-sistema upstream. El binario valida la consistencia local del escenario antes de
-procesar batches:
+## Versiones cubiertas
 
-- participantes unicos;
-- reservas con owner existente;
-- paquetes con reserva y beneficiario validos;
-- importes positivos;
-- fees no negativos y no superiores al importe principal;
-- limites de intentos, delays y legs dentro de rangos definidos.
-- limites opcionales de lane para importe, fee y prioridad.
+| Versión   | Estado           | Cobertura de seguridad |
+| --------- | ---------------- | ---------------------- |
+| `1.0.x`   | Activa           | Correcciones y avisos  |
+| `< 1.0.0` | Fuera de soporte | Migración requerida    |
 
-## Invariantes Esperadas
+La referencia estable es el release más reciente publicado desde `production`. No se consideran entregables estables los commits aislados, artefactos locales ni ramas de trabajo.
 
-Durante una liquidacion normal:
+## Reporte privado
 
-- una reserva no debe tener importes negativos;
-- un paquete liquidado debe tener un receipt consumido;
-- un paquete diferido debe respetar `notBefore`;
-- las prioridades deben ser deterministas para un mismo fixture;
-- las cuentas de beneficiarios y fees deben reflejar el importe neto liquidado;
-- el reporte final debe ser estable byte a byte para un fixture identico.
+Utilice **GitHub → Security → Advisories → New draft security advisory** en este repositorio. No publique detalles técnicos en issues, discusiones, pull requests ni canales externos antes de completar la coordinación privada.
 
-## Validacion Automatizada
+Incluya:
 
-La suite publica cubre:
+- versión, commit y plataforma;
+- componente y precondiciones;
+- secuencia mínima reproducible;
+- diferencia entre resultado esperado y observado;
+- impacto sobre reservas, liquidaciones, autorización o disponibilidad;
+- registros depurados de secretos y datos personales;
+- propuesta de comprobación de regresión, si existe.
 
-- contrato de CLI;
-- validacion de fixtures;
-- accounting de reservas;
-- consumo de receipts en flujos normales;
-- reanudacion por ventana de retry;
-- prioridad dinamica por congestion;
-- rechazos por politicas de lane;
-- reconciliacion agregada por lane;
-- determinismo de reportes.
+## Tiempos objetivo
 
-## Gestion De Dependencias
+| Fase                        |                   Objetivo |
+| --------------------------- | -------------------------: |
+| Acuse de recibo             |          2 días laborables |
+| Clasificación inicial       |          5 días laborables |
+| Plan de corrección          |         10 días laborables |
+| Coordinación de publicación | Según impacto y despliegue |
 
-El nucleo C no depende de librerias externas. Node se usa solo para scripts y
-tests. Dependabot esta configurado para npm y GitHub Actions.
+Los tiempos son objetivos operativos. Una investigación puede requerir más plazo si depende de varios compiladores, estados económicos o integraciones externas.
 
-## Alcance De Revision
+## Límites de confianza
 
-El alcance principal es la logica de settlement en:
+```mermaid
+flowchart LR
+    A["Entrada autorizada"] --> B["Parser y validación"]
+    B --> C["Política del carril"]
+    C --> D["Planificador"]
+    D --> E["Libro económico"]
+    E --> F["Informe firmado externamente"]
+    G["Operación de gobierno"] --> H["Quórum + timelock + predecesor"]
+    H --> C
+    I["Operador"] -. "sin acceso directo" .-> E
+```
 
-- `src/model.*`
-- `src/ledger.*`
-- `src/scheduler.*`
-- `src/settlement.*`
-- `tests/fixtures/*.json`
+- El manifiesto de entrada debe llegar autenticado por la capa integradora.
+- CascadeDTL valida estructura y consistencia; no sustituye la autenticación upstream.
+- El proceso no debe ejecutarse con privilegios administrativos.
+- El directorio de entrada debe ser de solo lectura para el proceso de liquidación.
+- Los informes deben almacenarse en un canal con control de integridad y retención.
+- Las operaciones de política requieren identidad separada de la identidad que ejecuta lotes.
 
-Los directorios `out/`, `build/` y `node_modules/` son artefactos locales.
+## Activos protegidos
 
-## Reportes
+- Capacidad disponible y bloqueada de cada reserva.
+- Estado de recibos y paquetes.
+- Saldos netos de beneficiarios y cuentas de comisión.
+- Orden determinista de ejecución.
+- Parámetros de riesgo por carril.
+- Ventanas, quórum y precedencias de gobierno.
+- Evidencia de ejecución, eventos y artefactos de release.
 
-Un reporte interno debe incluir:
+## Invariantes operativas
 
-- fixture o secuencia de batches reproducible;
-- estado final JSON;
-- diferencia esperada frente al resultado observado;
-- impacto economico;
-- propuesta de test de regresion.
+- Ningún importe contable puede ser negativo.
+- Todo paquete debe referenciar participantes y reservas existentes.
+- La comisión está comprendida entre cero y el importe bruto.
+- Las operaciones usan enteros con comprobación de overflow.
+- Una política se evalúa antes de modificar una reserva.
+- El mismo manifiesto y binario producen el mismo orden y el mismo informe.
+- Una operación de gobierno cambia de identidad si cambia cualquier campo económico o temporal.
+- Un release estable conserva alineados `main`, `production` y su tag anotado.
+
+## Controles de compilación y cadena de suministro
+
+- C11 con `-Wall -Wextra -Wpedantic -Werror` en Linux y `/W4 /WX` en MSVC.
+- Dependencias JavaScript instaladas con `npm ci` y lockfile versionado.
+- Acciones de GitHub fijadas por versión mayor mantenida.
+- Dependabot revisa npm y GitHub Actions.
+- La CI no utiliza secretos para compilar o ejecutar pruebas.
+- Los artefactos generados, variables de entorno y material privado quedan fuera del control de versiones.
+
+## Gestión de secretos
+
+El repositorio no requiere secretos para compilar, validar manifiestos ni ejecutar la suite. Las integraciones que añadan autenticación deben inyectar credenciales en tiempo de ejecución, limitar su alcance y rotarlas fuera del repositorio. Nunca incluya tokens, claves, credenciales, payloads confidenciales ni volcados completos en una evidencia compartida.
+
+## Respuesta operativa
+
+Ante una señal de integridad:
+
+1. Detener nuevas admisiones del carril afectado.
+2. Conservar manifiesto, hash del binario, salida y eventos.
+3. No reescribir archivos de evidencia.
+4. Conciliar reservas, recibos y saldos por separado.
+5. Preparar una operación de política con payload, ventana y predecesor explícitos.
+6. Validar la corrección en las plataformas soportadas.
+7. Publicar un release alineado y documentar la recuperación.
+
+Consulte [docs/security-model.md](docs/security-model.md) y [docs/operations.md](docs/operations.md) para el modelo completo.

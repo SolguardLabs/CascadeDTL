@@ -4,7 +4,7 @@
 #include <string.h>
 
 static void receipt_id_for(char out[CASCADE_ID_LEN], const Packet *packet, int attempt) {
-    snprintf(out, CASCADE_ID_LEN, "rcpt-%s-%02d", packet->id, attempt);
+    snprintf(out, CASCADE_ID_LEN, "rcpt-%.48s-%02d", packet->id, attempt);
 }
 
 static bool reserve_lock_amount(CascadeState *state, Reserve *reserve, Packet *packet, CascadeStatus *status) {
