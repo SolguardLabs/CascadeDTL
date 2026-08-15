@@ -8,7 +8,7 @@ test("validate accepts fixture schema", () => {
 
 test("help output exposes supported commands", () => {
   const stdout = runCli(["--help"]);
-  assert.match(stdout, /CascadeDTL batch settlement simulator/);
+  assert.match(stdout, /CascadeDTL deterministic settlement engine/);
   assert.match(stdout, /validate <fixture\.json>/);
 });
 

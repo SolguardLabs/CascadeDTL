@@ -13,6 +13,8 @@ const clean = args.has("--clean");
 
 const sources = [
   "src/common.c",
+  "src/capital.c",
+  "src/governance.c",
   "src/json.c",
   "src/model.c",
   "src/risk.c",
@@ -47,8 +49,10 @@ function commandExists(command) {
 
 function compilerCandidates() {
   const explicit = process.env.CC ? [process.env.CC] : [];
-  const native = process.platform === "win32" ? ["clang", "gcc", "cc", "cl"] : ["cc", "gcc", "clang"];
-  const discovered = process.platform === "win32" ? findMsvcVcvars().map((path) => `vcvars:${path}`) : [];
+  const native =
+    process.platform === "win32" ? ["clang", "gcc", "cc", "cl"] : ["cc", "gcc", "clang"];
+  const discovered =
+    process.platform === "win32" ? findMsvcVcvars().map((path) => `vcvars:${path}`) : [];
   return [...explicit, ...native, ...discovered].filter(
     (value, index, array) => value && array.indexOf(value) === index,
   );
@@ -110,15 +114,7 @@ function buildWithMsvcVcvars(vcvarsPath) {
 }
 
 function buildWithUnixCompiler(command) {
-  const flags = [
-    "-std=c11",
-    "-O2",
-    "-I",
-    join(root, "src"),
-    "-o",
-    output,
-    ...sources,
-  ];
+  const flags = ["-std=c11", "-O2", "-I", join(root, "src"), "-o", output, ...sources];
   if (warnings) {
     flags.splice(2, 0, "-Werror", "-Wall", "-Wextra", "-Wpedantic");
   }
@@ -156,7 +152,9 @@ for (const compiler of compilerCandidates()) {
 }
 
 if (attempted.length === 0) {
-  console.error("No C compiler found. Install gcc, clang, cc, or run from a Visual Studio Developer Prompt.");
+  console.error(
+    "No C compiler found. Install gcc, clang, cc, or run from a Visual Studio Developer Prompt.",
+  );
 } else {
   console.error(`Compilation failed with: ${attempted.join(", ")}`);
 }

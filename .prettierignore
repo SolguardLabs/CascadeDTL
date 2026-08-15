@@ -1,6 +1,6 @@
-build/
-out/
+.git/
+assets/
 node_modules/
-coverage/
-package-lock.json
-vulnerability.md
+out/
+out-linux/
+tests/private/

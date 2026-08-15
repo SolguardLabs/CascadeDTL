@@ -9,6 +9,9 @@ test("congestion weighting can outrank base priority", () => {
     .map((line) => line.match(/packet=([^ ]+)/)?.[1]);
 
   assert.deepEqual(attempts, ["pkt-heavy-001", "pkt-top-001", "pkt-low-001"]);
-  assert.equal(byId(state.packets, "pkt-heavy-001").lastScore > byId(state.packets, "pkt-top-001").lastScore, true);
+  assert.equal(
+    byId(state.packets, "pkt-heavy-001").lastScore > byId(state.packets, "pkt-top-001").lastScore,
+    true,
+  );
   assert.equal(state.metrics.grossSettled, 33000);
 });

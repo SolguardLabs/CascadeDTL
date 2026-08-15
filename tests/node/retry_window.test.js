@@ -22,6 +22,12 @@ test("deferred packet resumes after its retry window", () => {
 
 test("retry output remains deterministic with events enabled", () => {
   const state = runFixture("retained_retry.json", ["--events"]);
-  assert.equal(state.events.some((line) => line.includes("packet_deferred")), true);
-  assert.equal(state.events.some((line) => line.includes("packet_settled")), true);
+  assert.equal(
+    state.events.some((line) => line.includes("packet_deferred")),
+    true,
+  );
+  assert.equal(
+    state.events.some((line) => line.includes("packet_settled")),
+    true,
+  );
 });

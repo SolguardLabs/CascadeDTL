@@ -1,19 +1,22 @@
 {
   "name": "cascadedtl",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
-  "description": "Batch DTL settlement simulator with deferred queues and dynamic priority.",
+  "description": "Deterministic DTL batch settlement engine with reserve, capital, and governance controls.",
   "type": "module",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/build.mjs && node --test \"tests/node/*.test.js\"",
-    "ci": "node scripts/build.mjs --warnings && node --test \"tests/node/*.test.js\"",
-    "format:check": "prettier --check ."
+    "test": "node scripts/build.mjs --clean && node --test \"tests/node/*.test.js\"",
+    "test:node": "node --test \"tests/node/*.test.js\"",
+    "verify": "node scripts/verify-repository.mjs",
+    "ci": "node scripts/build.mjs --warnings --clean && node --test \"tests/node/*.test.js\" && npm run format:check && npm run verify",
+    "format:check": "prettier --check \".github/**/*.yml\" \"docs/**/*.md\" \"sdk/**/*.mjs\" \"scripts/**/*.mjs\" \"tests/**/*.js\" \"tests/**/*.json\" \"*.md\" \"*.json\"",
+    "format:write": "prettier --write \".github/**/*.yml\" \"docs/**/*.md\" \"sdk/**/*.mjs\" \"scripts/**/*.mjs\" \"tests/**/*.js\" \"tests/**/*.json\" \"*.md\" \"*.json\""
   },
   "devDependencies": {
-    "prettier": "^3.3.3"
+    "prettier": "3.9.6"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }
